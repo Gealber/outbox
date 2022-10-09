@@ -17,19 +17,16 @@ type AppConfig struct {
 		Mode string
 	}
 
-	Database struct {
-		Username string
-		Password string
-		Host     string
-		Name     string
-		Port     uint32
-		SslMode  string
-		Timezone string
-		Engine   string
+	Cockroach struct {
+		DSN string
 	}
 
 	Cors struct {
 		Origins []string
+	}
+
+	GCP struct {
+		ProjectID string
 	}
 }
 
@@ -64,16 +61,12 @@ func loadConfig() {
 	// Gin.
 	cfg.Gin.Mode = viper.GetString("GIN_MODE")
 
-	// Database.
-	cfg.Database.Username = viper.GetString("DATABASE_USERNAME")
-	cfg.Database.Password = viper.GetString("DATABASE_PASSWORD")
-	cfg.Database.Host = viper.GetString("DATABASE_HOST")
-	cfg.Database.Name = viper.GetString("DATABASE_NAME")
-	cfg.Database.Port = viper.GetUint32("DATABASE_PORT")
-	cfg.Database.SslMode = viper.GetString("DATABASE_SSLMODE")
-	cfg.Database.Timezone = viper.GetString("DATABASE_TIMEZONE")
-	cfg.Database.Engine = viper.GetString("DATABASE_ENGINE")
+	// Cockroach.
+	cfg.Cockroach.DSN = viper.GetString("COCKROACH_DSN")
 
 	// CORS.
 	cfg.Cors.Origins = viper.GetStringSlice("CORS_ORIGINS")
+
+	// GCP.
+	cfg.GCP.ProjectID = viper.GetString("GCP_PROJECT_ID")
 }

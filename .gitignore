@@ -2,3 +2,4 @@
 coverage.out
 bin
 logs_postgres
+cockroach-data

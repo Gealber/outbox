@@ -6,7 +6,7 @@ ENV?=development
 APP := outbox
 
 # Database connection string
-DB_CS="user=postgres password=example dbname=$(APP) sslmode=disable"
+DB_CS="postgresql://root@$(hostname):26257/defaultdb?sslmode=disable"
 
 run: ## Run code
 	@go run main.go
@@ -20,6 +20,12 @@ migration-status: ## Migartion status
 
 migration-up: ## Migartion up
 	@goose -dir=./database/migrations postgres $(DB_CS) up
+
+migration-cockroach-up: ## Migartion up for cockroach db
+	@goose -dir=./database/migrations/cockroachdb  postgres $(DB_CS) up
+
+migration-cockroach-down: ## Migartion up for cockroach db
+	@goose -dir=./database/migrations/cockroachdb  postgres $(DB_CS) down
 
 migration-down: ## Migartion down
 	@goose -dir=./database/migrations postgres $(DB_CS) down

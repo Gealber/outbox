@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/Gealber/outbox/config"
 	"github.com/Gealber/outbox/database"
@@ -27,21 +26,15 @@ func main() {
 	}
 
 	eventRepo := repositoryEvent.New(dbApp)
-	ticker := time.NewTicker(30 * time.Second)
-	done := make(chan bool)
+	pubsubClient, err := msgrelay.NewPubSub(ctx, cfg.GCP.ProjectID)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// spinning up message relay.
 	go func() {
-		for {
-			select {
-			case <-done:
-				return
-			case <-ticker.C:
-				err := msgrelay.Poll(ctx, eventRepo)
-				if err != nil {
-					fmt.Println("ERR: ", err)
-				}
-			}
+		err := eventRepo.ChangeFeed(ctx, pubsubClient)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}()
 
@@ -55,7 +48,6 @@ func main() {
 
 	srvAddr := fmt.Sprintf(":%s", cfg.App.Port)
 	if err := g.Run(srvAddr); err != nil {
-		done <- true
 		panic(err)
 	}
 }
